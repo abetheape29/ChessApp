@@ -17,3 +17,6 @@ The move information includes the piece moved and its ending position.
 Acceptance Criteria:
 
 The chess board and pieces look sleek, with a classic and traditional chess set look.
+
+
+The first issues to tackle will be the creation of the web app (frontend and backend) as well as the board appearance.
