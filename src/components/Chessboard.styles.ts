@@ -6,6 +6,10 @@ export const Board = styled.div`
   width: 320px;
   height: 320px;
 
+  & > div {
+    display: flex;
+  }
+
   .square {
     display: inline-block;
     width: 40px;
