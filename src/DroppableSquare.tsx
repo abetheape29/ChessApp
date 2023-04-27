@@ -1,6 +1,5 @@
 import React from 'react';
 import { useDrop } from 'react-dnd';
-import { ChessBoardBoard } from './utils';
 
 interface DroppableSquareProps {
     row: number;
