@@ -11,7 +11,9 @@ import blackBishop from './assets/pieces/bB.svg';
 import blackKnight from './assets/pieces/bN.svg';
 import blackPawn from './assets/pieces/bP.svg';
 
-export type ChessBoardBoard = Array<Array<string | null>>;
+export type ChessBoardSquare = string | null;
+export type ChessBoardRow = ChessBoardSquare[];
+export type ChessBoardBoard = ChessBoardRow[];
 
 export const initialBoard: ChessBoardBoard = [
   ['r', 'n', 'b', 'q', 'k', 'b', 'n', 'r'],

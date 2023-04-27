@@ -1,34 +1,55 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { Board, BoardContainer, Title } from './Chessboard.styles';
 import DraggablePiece from '../DraggablePiece';
 import DroppableSquare from '../DroppableSquare';
-import { initialBoard, pieceToSvg, ChessBoardBoard } from '../utils';
+import { initialBoard, pieceToSvg, ChessBoardBoard, ChessBoardRow } from '../utils';
 
 const Chessboard: React.FC = () => {
   const [chessboard, setChessboard] = useState<ChessBoardBoard>(initialBoard);
 
-  const movePiece = (
+  useEffect(() => {
+    const fetchInitialBoard = async () => {
+      try {
+        const response = await fetch('http://localhost:3001/api/new-game');
+        const data = await response.json();
+        setChessboard(data);
+      } catch (error) {
+        console.error('Error fetching initial board:', error);
+      }
+    };
+
+    fetchInitialBoard();
+  }, []);
+
+
+  const movePiece = async (
     fromRow: number,
     fromCol: number,
     toRow: number,
     toCol: number
-  ): void => {
+  ): Promise<void> => {
     console.log(
       `movePiece called: fromRow=${fromRow}, fromCol=${fromCol}, toRow=${toRow}, toCol=${toCol}`
     );
 
-    setChessboard((prevChessboard) => {
-      const newBoard = prevChessboard.map((row) => row.slice());
-      newBoard[toRow][toCol] = newBoard[fromRow][fromCol];
-      newBoard[fromRow][fromCol] = null;
-      console.log("setChessboard called with", newBoard);
-      return newBoard;
-    });
+    try {
+      const response = await fetch('http://localhost:3001/api/move', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ fromRow, fromCol, toRow, toCol }),
+      });
+
+      const newBoard = await response.json();
+      console.log("New chessboard:", newBoard);
+      setChessboard(newBoard.map((row: ChessBoardRow) => row.slice()));
+    } catch (error) {
+      console.error('Error moving piece:', error);
+    }
   };
-
-
 
   return (
     <DndProvider backend={HTML5Backend}>
@@ -50,7 +71,6 @@ const Chessboard: React.FC = () => {
                   >
                     {piece ? (
                       <DraggablePiece
-                        key={`${piece}-${row}-${col}`}
                         piece={piece}
                         row={row}
                         col={col}
@@ -59,8 +79,6 @@ const Chessboard: React.FC = () => {
                     ) : null}
                   </DroppableSquare>
                 );
-                // ...
-
               })}
             </div>
           ))}
