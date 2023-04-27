@@ -25,6 +25,7 @@ export const movePiece = (
     console.log("Initial chessboard:", chessboard); 
     const piece = chessboard[fromRow][fromCol];
     if (!piece) return chessboard;
+    if (fromRow === toRow && fromCol === toCol) return chessboard;
 
     const isWhitePiece = chessboard[fromRow][fromCol]?.toUpperCase() === chessboard[fromRow][fromCol];
     const isWhitesTurn = turnCounter % 2 === 0;
