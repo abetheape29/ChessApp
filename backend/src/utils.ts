@@ -1,7 +1,3 @@
-import {Chess} from "chess.js";
-
-let chess = new Chess();
-
 export type ChessBoardSquare = string | null;
 export type ChessBoardRow = ChessBoardSquare[];
 export type ChessBoardBoard = ChessBoardRow[];
@@ -17,14 +13,14 @@ export const initialBoard: ChessBoardBoard = [
     ["R", "N", "B", "Q", "K", "B", "N", "R"],
 ];
 
-let turnCounter = 0;
-
 export const movePiece = (
     fromRow: number,
     fromCol: number,
     toRow: number,
     toCol: number,
     chessboard: ChessBoardBoard,
+    chess: any,
+    turnCounter: number
 ): ChessBoardBoard => {
     console.log("Initial chessboard:", chessboard); 
     const piece = chessboard[fromRow][fromCol];
@@ -43,7 +39,6 @@ export const movePiece = (
     const newBoard = fenToBoard(chess.fen());
 
     console.log("Updated chessboard:", newBoard); 
-    turnCounter++;
 
     return newBoard;
 };
