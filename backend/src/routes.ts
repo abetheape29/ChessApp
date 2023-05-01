@@ -37,8 +37,11 @@ router.post("/api/save-game", async (req, res) => {
     const fen = chess.fen();
     const gameId = `Game ${id}`;
     try {
-        const savedGame = new SavedGame({ gameId, fen });
-        await savedGame.save();
+        await SavedGame.findOneAndUpdate(
+            { gameId }, 
+            { fen }, 
+            { upsert: true }
+        );
         id++;
         res.json({message: "Game saved successfully!"});
     } catch (error) {
