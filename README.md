@@ -6,6 +6,8 @@ To run application, first make sure NodeJS is installed. It can be installed fro
 
 Install necessary dependencies with the command ```npm install```
 
-Lastly, to run the application, run the command ```npm start``` from the ChessApp directory.
+Then navigate to the backend folder and install necessary dependencies with the command ```npm install```
+
+Lastly, to run the application, run the command ```npm start``` from the backend directory, and ```npm start``` from the ChessApp directory.
 
 The application will be found in localhost at port 3000
