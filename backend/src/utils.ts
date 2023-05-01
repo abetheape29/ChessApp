@@ -1,3 +1,7 @@
+import {Chess} from "chess.js";
+
+let chess = new Chess();
+
 export type ChessBoardSquare = string | null;
 export type ChessBoardRow = ChessBoardSquare[];
 export type ChessBoardBoard = ChessBoardRow[];
@@ -35,12 +39,43 @@ export const movePiece = (
         return chessboard;
     }
 
-    const newBoard = chessboard.map((row) => row.slice());
-    newBoard[toRow][toCol] = newBoard[fromRow][fromCol];
-    newBoard[fromRow][fromCol] = null;
+    chess.move(getMove(fromRow, fromCol, toRow, toCol, piece));
+    const newBoard = fenToBoard(chess.fen());
 
     console.log("Updated chessboard:", newBoard); 
     turnCounter++;
 
     return newBoard;
 };
+
+const getMove = (fromRow: number, fromCol: number, toRow: number, toCol: number, piece: string): string => {
+    const from = `${String.fromCharCode(97 + fromCol)}${8 - fromRow}`;
+    const to = `${String.fromCharCode(97 + toCol)}${8 - toRow}`;
+    let pieceString = "";
+    if (piece === "P" || piece == "p") pieceString = "";
+    else pieceString = piece.toUpperCase();
+    return `${pieceString}${from}${to}`;
+}
+
+const fenToBoard = (fen: string): ChessBoardBoard => {
+    const boardPosition = fen.split(" ")[0];
+    const rankStrings = boardPosition.split("/");
+  
+    const board: ChessBoardBoard = rankStrings.map((rankString) => {
+      const row: ChessBoardRow = [];
+      for (const char of rankString) {
+        if (/\d/.test(char)) {
+          const emptySpaces = parseInt(char, 10);
+          for (let i = 0; i < emptySpaces; i++) {
+            row.push(null);
+          }
+        } else {
+          row.push(char);
+        }
+      }
+      return row;
+    });
+  
+    return board;
+  };
+  
