@@ -48,3 +48,14 @@ export const Title = styled.h1`
   color: #444;
   margin-bottom: 20px;
 `;
+
+export const GameContainer = styled.div`
+  display: flex;
+  align-items: flex-start;
+`;
+
+export const ContentContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+`;

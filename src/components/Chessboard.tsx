@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
-import { Board, BoardContainer, Title } from './Chessboard.styles';
+import { Board, BoardContainer, Title, GameContainer, ContentContainer } from './Chessboard.styles';
 import DraggablePiece from '../DraggablePiece';
 import DroppableSquare from '../DroppableSquare';
 import { initialBoard, pieceToSvg, ChessBoardBoard, ChessBoardRow } from '../utils';
@@ -45,7 +45,7 @@ const Chessboard: React.FC = () => {
         body: JSON.stringify({ fromRow, fromCol, toRow, toCol, promotionChoice }),
       });
 
-      const {chessboard: newBoard, resultString: newGameStatus} = await response.json();
+      const { chessboard: newBoard, resultString: newGameStatus } = await response.json();
       console.log("New chessboard:", newBoard);
       setChessboard(newBoard.map((row: ChessBoardRow) => row.slice()));
       setGameStatus(newGameStatus);
@@ -69,47 +69,62 @@ const Chessboard: React.FC = () => {
     }
   };
 
+  const startNewGame = async () => {
+    try {
+      const response = await fetch('http://localhost:3001/api/new-game');
+      const data = await response.json();
+      setChessboard(data);
+      setGameStatus(null);
+    } catch (error) {
+      console.error('Error fetching initial board:', error);
+    }
+  };
+
   return (
     <DndProvider backend={HTML5Backend}>
       <BoardContainer>
-        <Title>My Chess Game</Title>
-        {gameStatus && <h2>{gameStatus}</h2>}
-
-        <Board>
-          {chessboard.map((rowContent, row) => (
-            <div key={row}>
-              {rowContent.map((piece, col) => {
-                const color = (row + col) % 2 === 0 ? 'white' : 'black';
-                // ...
-                return (
-                  <DroppableSquare
-                    key={`${row}-${col}`}
-                    row={row}
-                    col={col}
-                    color={color}
-                    onMovePiece={async (fromRow, fromCol, toRow, toCol) => {
-                      const piece = chessboard[fromRow][fromCol];
-                      if (piece && piece.toLowerCase() === "p" && (toRow === 0 || toRow === 7)) {
-                        await handlePromotion(fromRow, fromCol, toRow, toCol);
-                      } else {
-                        await movePiece(fromRow, fromCol, toRow, toCol);
-                      }
-                    }}
-                  >
-                    {piece ? (
-                      <DraggablePiece
-                        piece={piece}
+        <ContentContainer>
+          <Title>My Chess Game</Title>
+          {gameStatus && <h2>{gameStatus}</h2>}
+          <GameContainer>
+            <Board>
+              {chessboard.map((rowContent, row) => (
+                <div key={row}>
+                  {rowContent.map((piece, col) => {
+                    const color = (row + col) % 2 === 0 ? 'white' : 'black';
+                    // ...
+                    return (
+                      <DroppableSquare
+                        key={`${row}-${col}`}
                         row={row}
                         col={col}
-                        image={pieceToSvg(piece)}
-                      />
-                    ) : null}
-                  </DroppableSquare>
-                );
-              })}
-            </div>
-          ))}
-        </Board>
+                        color={color}
+                        onMovePiece={async (fromRow, fromCol, toRow, toCol) => {
+                          const piece = chessboard[fromRow][fromCol];
+                          if (piece && piece.toLowerCase() === "p" && (toRow === 0 || toRow === 7)) {
+                            await handlePromotion(fromRow, fromCol, toRow, toCol);
+                          } else {
+                            await movePiece(fromRow, fromCol, toRow, toCol);
+                          }
+                        }}
+                      >
+                        {piece ? (
+                          <DraggablePiece
+                            piece={piece}
+                            row={row}
+                            col={col}
+                            image={pieceToSvg(piece)}
+                          />
+                        ) : null}
+                      </DroppableSquare>
+                    );
+                  })}
+                </div>
+              ))}
+            </Board>
+            <button onClick={startNewGame} style={{ marginLeft: '20px' }}>Start Position</button>
+          </GameContainer>
+        </ContentContainer>
       </BoardContainer>
     </DndProvider>
   );
