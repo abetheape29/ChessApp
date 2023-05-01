@@ -80,6 +80,23 @@ const Chessboard: React.FC = () => {
     }
   };
 
+  const saveGame = async () => {
+    try {
+      const response = await fetch('http://localhost:3001/api/save-game', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({}),
+      });
+
+      const data = await response.json();
+      alert(data.message);
+    } catch (error) {
+      console.error('Error saving game:', error);
+    }
+  };
+
   return (
     <DndProvider backend={HTML5Backend}>
       <BoardContainer>
@@ -122,7 +139,8 @@ const Chessboard: React.FC = () => {
                 </div>
               ))}
             </Board>
-            <button onClick={startNewGame} style={{ marginLeft: '20px' }}>Start Position</button>
+            <button id="start-position-button" onClick={startNewGame} style={{ marginLeft: '20px' }}>Start Position</button>
+            <button onClick={saveGame} style={{ marginLeft: '20px' }}>Save Game</button>
           </GameContainer>
         </ContentContainer>
       </BoardContainer>
