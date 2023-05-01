@@ -20,7 +20,8 @@ export const movePiece = (
     toCol: number,
     chessboard: ChessBoardBoard,
     chess: any,
-    turnCounter: number
+    turnCounter: number,
+    promotionChoice : string | null = null
 ): ChessBoardBoard => {
     console.log("Initial chessboard:", chessboard); 
     const piece = chessboard[fromRow][fromCol];
@@ -35,7 +36,7 @@ export const movePiece = (
         return chessboard;
     }
 
-    chess.move(getMove(fromRow, fromCol, toRow, toCol, piece));
+    chess.move(getMove(fromRow, fromCol, toRow, toCol, piece, promotionChoice));
     const newBoard = fenToBoard(chess.fen());
 
     console.log("Updated chessboard:", newBoard); 
@@ -43,13 +44,14 @@ export const movePiece = (
     return newBoard;
 };
 
-const getMove = (fromRow: number, fromCol: number, toRow: number, toCol: number, piece: string): string => {
+const getMove = (fromRow: number, fromCol: number, toRow: number, toCol: number, piece: string, promotionChoice: string | null): string => {
     const from = `${String.fromCharCode(97 + fromCol)}${8 - fromRow}`;
     const to = `${String.fromCharCode(97 + toCol)}${8 - toRow}`;
     let pieceString = "";
     if (piece === "P" || piece == "p") pieceString = "";
     else pieceString = piece.toUpperCase();
-    return `${pieceString}${from}${to}`;
+    if (piece.toLowerCase() === 'p' && (toRow === 0 || toRow === 7) && promotionChoice) return `${pieceString}${from}${to}=${promotionChoice.toUpperCase()}`;
+    else return `${pieceString}${from}${to}`;
 }
 
 const fenToBoard = (fen: string): ChessBoardBoard => {

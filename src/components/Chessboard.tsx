@@ -28,7 +28,8 @@ const Chessboard: React.FC = () => {
     fromRow: number,
     fromCol: number,
     toRow: number,
-    toCol: number
+    toCol: number,
+    promotionChoice: string | null = null
   ): Promise<void> => {
     console.log(
       `movePiece called: fromRow=${fromRow}, fromCol=${fromCol}, toRow=${toRow}, toCol=${toCol}`
@@ -40,7 +41,7 @@ const Chessboard: React.FC = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ fromRow, fromCol, toRow, toCol }),
+        body: JSON.stringify({ fromRow, fromCol, toRow, toCol, promotionChoice }),
       });
 
       const newBoard = await response.json();
@@ -48,6 +49,21 @@ const Chessboard: React.FC = () => {
       setChessboard(newBoard.map((row: ChessBoardRow) => row.slice()));
     } catch (error) {
       console.error('Error moving piece:', error);
+    }
+  };
+
+  const handlePromotion = async (
+    fromRow: number,
+    fromCol: number,
+    toRow: number,
+    toCol: number
+  ) => {
+    const promotionChoice = window.prompt("Choose a promotion piece (q, r, n, or b):");
+    if (promotionChoice && ["q", "r", "n", "b"].includes(promotionChoice.toLowerCase())) {
+      await movePiece(fromRow, fromCol, toRow, toCol, promotionChoice.toLowerCase());
+    } else {
+      window.alert("Invalid promotion piece. Please try again.");
+      await handlePromotion(fromRow, fromCol, toRow, toCol);
     }
   };
 
@@ -67,7 +83,14 @@ const Chessboard: React.FC = () => {
                     row={row}
                     col={col}
                     color={color}
-                    onMovePiece={movePiece}
+                    onMovePiece={async (fromRow, fromCol, toRow, toCol) => {
+                      const piece = chessboard[fromRow][fromCol];
+                      if (piece && piece.toLowerCase() === "p" && (toRow === 0 || toRow === 7)) {
+                        await handlePromotion(fromRow, fromCol, toRow, toCol);
+                      } else {
+                        await movePiece(fromRow, fromCol, toRow, toCol);
+                      }
+                    }}
                   >
                     {piece ? (
                       <DraggablePiece

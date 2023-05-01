@@ -16,9 +16,9 @@ router.get("/api/new-game", (req, res) => {
 });
 
 router.post("/api/move", (req, res) => {
-    const { fromRow, fromCol, toRow, toCol } = req.body;
+    const { fromRow, fromCol, toRow, toCol, promotionChoice } = req.body;
     const tmp = chessboard;
-    chessboard = movePiece(fromRow, fromCol, toRow, toCol, chessboard, chess, turnCounter);
+    chessboard = movePiece(fromRow, fromCol, toRow, toCol, chessboard, chess, turnCounter, promotionChoice);
     if (tmp !== chessboard) turnCounter++;
     res.json(chessboard);
 });
