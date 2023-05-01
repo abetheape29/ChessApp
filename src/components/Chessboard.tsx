@@ -8,6 +8,7 @@ import { initialBoard, pieceToSvg, ChessBoardBoard, ChessBoardRow } from '../uti
 
 const Chessboard: React.FC = () => {
   const [chessboard, setChessboard] = useState<ChessBoardBoard>(initialBoard);
+  const [gameStatus, setGameStatus] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchInitialBoard = async () => {
@@ -44,9 +45,10 @@ const Chessboard: React.FC = () => {
         body: JSON.stringify({ fromRow, fromCol, toRow, toCol, promotionChoice }),
       });
 
-      const newBoard = await response.json();
+      const {chessboard: newBoard, resultString: newGameStatus} = await response.json();
       console.log("New chessboard:", newBoard);
       setChessboard(newBoard.map((row: ChessBoardRow) => row.slice()));
+      setGameStatus(newGameStatus);
     } catch (error) {
       console.error('Error moving piece:', error);
     }
@@ -71,6 +73,8 @@ const Chessboard: React.FC = () => {
     <DndProvider backend={HTML5Backend}>
       <BoardContainer>
         <Title>My Chess Game</Title>
+        {gameStatus && <h2>{gameStatus}</h2>}
+
         <Board>
           {chessboard.map((rowContent, row) => (
             <div key={row}>

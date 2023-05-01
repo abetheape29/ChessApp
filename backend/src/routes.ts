@@ -20,7 +20,15 @@ router.post("/api/move", (req, res) => {
     const tmp = chessboard;
     chessboard = movePiece(fromRow, fromCol, toRow, toCol, chessboard, chess, turnCounter, promotionChoice);
     if (tmp !== chessboard) turnCounter++;
-    res.json(chessboard);
+    let resultString : string | null = null;
+    if (chess.isGameOver()) {
+        if (chess.isCheckmate()) {
+            if (chess.turn() === "w") resultString = "Black wins!";
+            else resultString = "White wins!";
+        }
+        else resultString = "Draw!";
+    }
+    res.json({chessboard, resultString});
 });
 
 export default router;
