@@ -54,6 +54,8 @@ const Chessboard: React.FC = () => {
     }
   };
 
+  (window as any).movePiece = movePiece;
+
   const handlePromotion = async (
     fromRow: number,
     fromCol: number,
