@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { initialBoard, movePiece, ChessBoardBoard } from "./utils";
+import { initialBoard, movePiece, ChessBoardBoard, fenToBoard, getStatus } from "./utils";
 import { Chess } from "chess.js";
 import SavedGame from "./models/savedGame";
 
@@ -37,14 +37,7 @@ router.post("/api/move", (req, res) => {
     const tmp = chessboard;
     chessboard = movePiece(fromRow, fromCol, toRow, toCol, chessboard, chess, turnCounter, promotionChoice);
     if (tmp !== chessboard) turnCounter++;
-    let resultString: string | null = null;
-    if (chess.isGameOver()) {
-        if (chess.isCheckmate()) {
-            if (chess.turn() === "w") resultString = "Black wins!";
-            else resultString = "White wins!";
-        }
-        else resultString = "Draw!";
-    }
+    const resultString = getStatus(chess);
     res.json({ chessboard, resultString });
 });
 
@@ -74,5 +67,25 @@ router.get("/api/load-games", async (req, res) => {
         res.status(500).json({ message: 'Error loading games.' });
     }
 });
+
+router.post("/api/display-loaded-game", async (req, res) => {
+    const { gameId } = req.body;
+    try {
+        const savedGame = await SavedGame.findOne({ gameId });
+        if (savedGame) {
+            const fen = savedGame.fen;
+            chess.load(fen);
+            chessboard = fenToBoard(fen);
+            const status = getStatus(chess);
+            res.json({ chessboard, status });
+        } else {
+            console.log("Game not found.");
+            res.status(404).json({ message: 'Game not found.' });
+        }
+    } catch (error) {
+        console.log("Error displaying loaded game: ", error);
+        res.status(500).json({ message: 'Error displaying loaded game.' });
+    }
+})
 
 export default router;

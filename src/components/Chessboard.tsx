@@ -108,6 +108,19 @@ const Chessboard: React.FC = () => {
     setSavedGames(data.map((game: any) => game.gameId));
   };
 
+  const displayLoadedGame = async (gameId: string) => {
+    const response = await fetch('http://localhost:3001/api/display-loaded-game', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ gameId }),
+    });
+    const data = await response.json();
+    setChessboard(data.chessboard);
+    setGameStatus(data.status);
+  };
+
   return (
     <DndProvider backend={HTML5Backend}>
       <BoardContainer>
@@ -157,7 +170,9 @@ const Chessboard: React.FC = () => {
               style={{ marginLeft: '20px' }}
               onChange={(e) => {
                 if (e.target.value !== 'default') {
-                  //loadGame(e.target.value);
+                  console.log("Loading game:", e.target.value);
+                  displayLoadedGame(e.target.value);
+                  e.target.value = 'default';
                 }
               }}
             >
