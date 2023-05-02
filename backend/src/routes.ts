@@ -10,6 +10,21 @@ let chessboard: ChessBoardBoard = initialBoard;
 let turnCounter = 0;
 let id = 1;
 
+const resetState = async () => {
+    try {
+        await SavedGame.deleteMany({});
+        id = 1;
+    } catch (error) {
+        console.error('Error resetting state:', error);
+    }
+};
+
+// Reset the state when the application starts
+(async () => {
+    await resetState();
+})();
+
+
 router.get("/api/new-game", (req, res) => {
     chessboard = initialBoard;
     chess = new Chess();
@@ -38,15 +53,25 @@ router.post("/api/save-game", async (req, res) => {
     const gameId = `Game ${id}`;
     try {
         await SavedGame.findOneAndUpdate(
-            { gameId }, 
-            { fen }, 
+            { gameId },
+            { fen },
             { upsert: true }
         );
         id++;
-        res.json({message: "Game saved successfully!"});
+        res.json({ message: "Game saved successfully!" });
     } catch (error) {
         console.log("Error saving gamme: ", error);
         res.status(500).json({ message: 'Error saving game.' });
+    }
+});
+
+router.get("/api/load-games", async (req, res) => {
+    try {
+        const games = await SavedGame.find();
+        res.json(games);
+    } catch (error) {
+        console.log("Error loading games: ", error);
+        res.status(500).json({ message: 'Error loading games.' });
     }
 });
 

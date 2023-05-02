@@ -9,6 +9,7 @@ import { initialBoard, pieceToSvg, ChessBoardBoard, ChessBoardRow } from '../uti
 const Chessboard: React.FC = () => {
   const [chessboard, setChessboard] = useState<ChessBoardBoard>(initialBoard);
   const [gameStatus, setGameStatus] = useState<string | null>(null);
+  const [savedGames, setSavedGames] = useState<string[]>([]);
 
   useEffect(() => {
     const fetchInitialBoard = async () => {
@@ -22,6 +23,7 @@ const Chessboard: React.FC = () => {
     };
 
     fetchInitialBoard();
+    fetchSavedGames();
   }, []);
 
 
@@ -94,9 +96,16 @@ const Chessboard: React.FC = () => {
 
       const data = await response.json();
       alert(data.message);
+      fetchSavedGames();
     } catch (error) {
       console.error('Error saving game:', error);
     }
+  };
+
+  const fetchSavedGames = async () => {
+    const response = await fetch('http://localhost:3001/api/load-games');
+    const data = await response.json();
+    setSavedGames(data.map((game: any) => game.gameId));
   };
 
   return (
@@ -143,6 +152,22 @@ const Chessboard: React.FC = () => {
             </Board>
             <button id="start-position-button" onClick={startNewGame} style={{ marginLeft: '20px' }}>Start Position</button>
             <button id="save-game" onClick={saveGame} style={{ marginLeft: '20px' }}>Save Game</button>
+            <select
+              id="saved-games"
+              style={{ marginLeft: '20px' }}
+              onChange={(e) => {
+                if (e.target.value !== 'default') {
+                  //loadGame(e.target.value);
+                }
+              }}
+            >
+              <option value="default">Load Saved Game</option>
+              {savedGames.map((gameId) => (
+                <option key={gameId} value={gameId}>
+                  {gameId}
+                </option>
+              ))}
+            </select>
           </GameContainer>
         </ContentContainer>
       </BoardContainer>
