@@ -140,7 +140,7 @@ const Chessboard: React.FC = () => {
               ))}
             </Board>
             <button id="start-position-button" onClick={startNewGame} style={{ marginLeft: '20px' }}>Start Position</button>
-            <button onClick={saveGame} style={{ marginLeft: '20px' }}>Save Game</button>
+            <button id="save-game" onClick={saveGame} style={{ marginLeft: '20px' }}>Save Game</button>
           </GameContainer>
         </ContentContainer>
       </BoardContainer>

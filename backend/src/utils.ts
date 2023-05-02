@@ -54,7 +54,7 @@ const getMove = (fromRow: number, fromCol: number, toRow: number, toCol: number,
     else return `${pieceString}${from}${to}`;
 }
 
-const fenToBoard = (fen: string): ChessBoardBoard => {
+export const fenToBoard = (fen: string): ChessBoardBoard => {
     const boardPosition = fen.split(" ")[0];
     const rankStrings = boardPosition.split("/");
   
